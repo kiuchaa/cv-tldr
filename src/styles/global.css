@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+@theme {
+	--color-gray-100: #dfe0e7;
+	--color-gray-400: #e8ecf3;
+	--color-gray-500: #6e7394;
+	--color-gray-600: #34384c;
+	--color-blue-100: #fad4d8;
+	--color-blue-200: #f5a8b0;
+	--color-blue-300: #eb6b78;
+	--color-blue-400: #e0354a;
+	--color-blue-500: #cd071e;
+	--radius-xs: 0;
+	--radius-sm: 0;
+	--radius-md: 0;
+	--radius-lg: 0;
+	--radius-xl: 0;
+	--radius-2xl: 0;
+	--radius-3xl: 0;
+	--radius-4xl: 0;
+}
+
+@layer base {
+	*,
+	*::before,
+	*::after {
+		border-radius: 0;
+	}
+
+	hr {
+		border: 0;
+		border-top: 1px solid var(--color-gray-100);
+		margin: 0;
+	}
+}
+
+@theme inline {
+	--font-sans: var(--font-geist-sans);
+	--font-serif: var(--font-junicode);
+	--font-mono: var(--font-geist-mono);
+}
+
+/* Junicode has a smaller x-height than Geist — match optical size */
+@utility font-serif {
+	font-family: var(--font-serif), ui-serif, Georgia, serif;
+	font-size-adjust: 0.52;
+}
+
+@page {
+	size: A4;
+	margin: 14mm;
+}
+
+.print-only {
+	display: none;
+}
+
+@media print {
+	body,
+	main,
+	footer {
+		background: #fff !important;
+	}
+
+	body,
+	footer,
+	footer * {
+		color: #000 !important;
+	}
+
+	/* Keep links recognizable; underline marks the clickable text */
+	a[href] {
+		color: #cd071e !important;
+		text-decoration: underline !important;
+		text-underline-offset: 2px;
+	}
+
+	footer a[href] {
+		color: #cd071e !important;
+	}
+
+	/* Plain stacked links — avoid flex/grid around <a> (Chromium PDF hit-box bug) */
+	.print-contact {
+		display: block !important;
+		margin-top: 0.75rem;
+	}
+
+	.print-contact h2 {
+		margin: 0 0 0.4rem;
+	}
+
+	.print-contact p {
+		margin: 0 0 0.3rem;
+	}
+
+	.print-contact a {
+		display: inline !important;
+		position: static !important;
+	}
+
+	[class*="text-blue-"]:not(a) {
+		color: inherit !important;
+	}
+
+	#about .hero-identity {
+		margin-bottom: 1.25rem !important;
+	}
+
+	/* Avoid transforms on links — Chrome print maps them to bad hit-boxes */
+	a,
+	a * {
+		transform: none !important;
+	}
+
+	.no-print {
+		display: none !important;
+	}
+
+	.print-only {
+		display: block !important;
+	}
+
+	ul.print-only {
+		display: block !important;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.skill-print-list li {
+		margin: 0 0 0.2rem;
+		font-size: 10pt;
+		line-height: 1.35;
+		color: #34384c !important;
+	}
+
+	.skill-print-list .text-gray-500 {
+		color: #6e7394 !important;
+	}
+
+	main {
+		min-height: 0 !important;
+		padding-bottom: 0 !important;
+	}
+
+	main > section,
+	footer > div {
+		max-width: none !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+
+	/* Keep the label/content grid in print (don't collapse to 1 col) */
+	main > section .grid,
+	footer .grid {
+		grid-template-columns: 7.5rem minmax(0, 1fr) !important;
+		column-gap: 1.25rem !important;
+		row-gap: 0.5rem !important;
+	}
+
+	main > section {
+		padding-top: 0.55rem !important;
+	}
+
+	#about {
+		padding-top: 0 !important;
+	}
+
+	/* Extra air around Experience / Ervaring in the PDF */
+	#experience {
+		padding-top: 1.35rem !important;
+		padding-bottom: 0.85rem !important;
+		margin-top: 0.35rem;
+		margin-bottom: 0.35rem;
+	}
+
+	#experience h2 {
+		margin-top: 0.15rem;
+		margin-bottom: 0.35rem;
+	}
+
+	/* Tailwind space-y uses margins — tighten for print */
+	#about .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+		margin-top: 0.5rem !important;
+	}
+
+	#about .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+		margin-top: 0.28rem !important;
+	}
+
+	main > section .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+		margin-top: 0.55rem !important;
+	}
+
+	main > section .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+		margin-top: 0.3rem !important;
+	}
+
+	/* Keep dotted leaders + entry dividers in the PDF */
+	.role-leader {
+		display: block !important;
+		width: 100%;
+		min-width: 1.25rem;
+		margin: 0;
+		align-self: center;
+		border-top-color: #dfe0e7 !important;
+	}
+
+	.cv-divider {
+		display: block !important;
+		border-top-color: #dfe0e7 !important;
+		opacity: 1;
+	}
+
+	.role-row {
+		display: grid !important;
+		grid-template-columns: minmax(0, max-content) minmax(1.25rem, 1fr) 7.25rem;
+		column-gap: 0.65rem;
+		align-items: center;
+	}
+
+	.date-range {
+		width: 7.25rem;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: 0.01em;
+		white-space: nowrap;
+		text-align: right;
+		color: #6e7394 !important;
+	}
+
+	footer {
+		padding: 1rem 0 0 !important;
+	}
+
+	footer .space-y-24 > :not([hidden]) ~ :not([hidden]),
+	footer .space-y-6 > :not([hidden]) ~ :not([hidden]),
+	footer .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+		margin-top: 0.4rem !important;
+	}
+
+	footer .border-blue-100 {
+		border-color: var(--color-gray-100) !important;
+	}
+
+	.cv-item {
+		break-inside: avoid;
+		page-break-inside: avoid;
+	}
+
+	.print-page-break {
+		break-before: page;
+		page-break-before: always;
+	}
+
+	* {
+		box-shadow: none !important;
+		outline: none !important;
+	}
+}

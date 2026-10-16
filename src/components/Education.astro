@@ -1,0 +1,48 @@
+---
+import { getCv } from '../data/cv';
+import { getUi } from '../data/ui';
+import { getLocale } from '../i18n';
+import DateRange from './DateRange.astro';
+import Rich from './Rich.astro';
+import Section from './Section.astro';
+
+const locale = getLocale(Astro.currentLocale);
+const cv = getCv(locale);
+const ui = getUi(locale);
+---
+
+{
+	cv.education.length > 0 && (
+		<Section title={ui.education} id="education" spacing="md">
+			{cv.education.map((item, index) => (
+				<>
+					{index > 0 && <hr class="cv-divider" />}
+					<div class="cv-item space-y-1">
+						<p class="text-base leading-6 font-medium text-gray-600">{item.school}</p>
+						<div class="role-row flex items-baseline gap-3">
+							<p class="min-w-0 flex-1 text-base leading-6 text-gray-600">{item.program}</p>
+							<hr class="role-leader hidden grow self-center sm:block" />
+							<DateRange start={item.start} end={item.end} presentLabel={ui.present} />
+						</div>
+						{item.description && (
+							<p class="pt-1 text-sm leading-5 text-pretty text-gray-500">
+								{typeof item.description === 'string' ? (
+									item.description
+								) : (
+									<Rich content={item.description} />
+								)}
+							</p>
+						)}
+						{item.highlights && item.highlights.length > 0 && (
+							<ul class="list-disc space-y-0.5 pt-1 pl-5 text-sm leading-5 text-gray-500">
+								{item.highlights.map((line) => (
+									<li>{line}</li>
+								))}
+							</ul>
+						)}
+					</div>
+				</>
+			))}
+		</Section>
+	)
+}

@@ -1,0 +1,41 @@
+---
+interface Props {
+	title: string;
+	id?: string;
+	layout?: 'grid' | 'stack';
+	spacing?: 'lg' | 'md';
+	class?: string;
+}
+
+const { title, id, layout = 'grid', spacing = 'lg', class: className } = Astro.props;
+const heading = 'text-base leading-6 italic font-serif font-normal text-gray-600';
+---
+
+<section
+	id={id}
+	class:list={[
+		'mx-auto max-w-2xl px-6 sm:px-12 print:pt-10',
+		spacing === 'lg' ? 'pt-48' : 'pt-24',
+		className,
+	]}
+>
+	{
+		layout === 'grid' ? (
+			<div class="grid grid-cols-1 gap-16 sm:grid-cols-12 sm:gap-6 print:gap-6">
+				<div class="sm:col-span-3">
+					<h2 class={heading}>{title}</h2>
+				</div>
+				<div class="space-y-6 sm:col-span-9">
+					<slot />
+				</div>
+			</div>
+		) : (
+			<div class="space-y-16">
+				<h2 class={heading}>{title}</h2>
+				<div class="space-y-6">
+					<slot />
+				</div>
+			</div>
+		)
+	}
+</section>

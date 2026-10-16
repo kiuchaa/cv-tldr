@@ -1,0 +1,68 @@
+---
+import { getUi } from '../data/ui';
+import { getLocale, localePath } from '../i18n';
+
+interface Props {
+	items: { label: string; href: string }[];
+}
+
+const { items } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const ui = getUi(locale);
+const homeHref = localePath(locale);
+
+const btn =
+	'inline-flex items-center justify-center px-3 py-1 text-sm leading-5 text-blue-500 outline outline-blue-500 transition-colors ease-in hover:bg-blue-500 hover:text-white';
+const btnActive = 'bg-blue-500 text-white outline outline-blue-500';
+---
+
+<header
+	class="no-print fixed top-3 left-1/2 z-50 w-max max-w-[calc(100%-1.5rem)] -translate-x-1/2 bg-gray-400/40 px-3 py-2 backdrop-blur"
+>
+	<nav aria-label="Primary">
+		<ul class="flex flex-wrap items-center justify-center gap-2">
+			<li class="flex items-center justify-center self-center">
+				<a
+					href={homeHref}
+					aria-label="Home"
+					class="inline-flex items-center justify-center px-1"
+				>
+					<img
+						src="/kiucha-better.svg"
+						alt=""
+						width="28"
+						height="16"
+						class="block h-4 w-auto object-contain"
+					/>
+				</a>
+			</li>
+			{
+				items.map((item) => (
+					<li>
+						<a href={item.href} class={btn}>
+							{item.label}
+						</a>
+					</li>
+				))
+			}
+			<li>
+				<a
+					href={localePath('en')}
+					class:list={[btn, locale === 'en' && btnActive]}
+					aria-current={locale === 'en' ? 'page' : undefined}
+				>
+					{ui.langEn}
+				</a>
+			</li>
+			<li>
+				<a
+					href={localePath('nl')}
+					class:list={[btn, locale === 'nl' && btnActive]}
+					aria-current={locale === 'nl' ? 'page' : undefined}
+				>
+					{ui.langNl}
+				</a>
+			</li>
+		</ul>
+	</nav>
+</header>

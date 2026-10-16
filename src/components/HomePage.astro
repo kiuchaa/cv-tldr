@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import Header from './Header.astro';
+import Experience from './Experience.astro';
+import Education from './Education.astro';
+import Skills from './Skills.astro';
+import GitHubActivity from './GitHubActivity.astro';
+import Bookshelf from './Bookshelf.astro';
+import Training from './Training.astro';
+import Footer from './Footer.astro';
+import { getCv } from '../data/cv';
+import { getUi } from '../data/ui';
+import { cvPdfPath, getLocale } from '../i18n';
+import { getContributionWeeks, githubUsername } from '../lib/github';
+import { getTrainingSummary } from '../lib/hevy';
+
+const locale = getLocale(Astro.currentLocale);
+const cv = getCv(locale);
+const ui = getUi(locale);
+
+const [training, weeks] = await Promise.all([
+	getTrainingSummary(locale, 2),
+	getContributionWeeks(githubUsername(cv.contact.github)),
+]);
+
+const menu = [
+	{ label: ui.intro, href: '#about', show: true },
+	{ label: ui.experience, href: '#experience', show: cv.experience.length > 0 },
+	{ label: ui.bookshelf, href: '#bookshelf', show: cv.books.length > 0 },
+	{ label: ui.training, href: '#training', show: training.workouts.length > 0 },
+	{ label: ui.contact, href: '#contact', show: true },
+	{ label: ui.downloadCv, href: cvPdfPath(locale), show: true },
+].filter((item) => item.show);
+---
+
+<Base>
+	<Nav items={menu} />
+	<main class="min-h-dvh bg-white pb-48 selection:bg-blue-500 selection:text-white">
+		<Header />
+		<Experience />
+		<Education />
+		<Skills />
+		<GitHubActivity weeks={weeks} />
+		<Bookshelf />
+		<Training training={training} />
+	</main>
+	<Footer />
+</Base>

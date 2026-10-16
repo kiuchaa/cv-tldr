@@ -1,0 +1,88 @@
+---
+import { getCv } from '../data/cv';
+import { getUi } from '../data/ui';
+import { dateLocale, getLocale } from '../i18n';
+import type { TrainingSummary } from '../lib/hevy';
+
+interface Props {
+	training: TrainingSummary;
+}
+
+const locale = getLocale(Astro.currentLocale);
+const cv = getCv(locale);
+const ui = getUi(locale);
+const { workouts, total } = Astro.props.training;
+const hevyUrl = /^https?:\/\//.test(cv.contact.hevy) ? cv.contact.hevy : null;
+const numbers = dateLocale(locale);
+
+const statsFor = (workout: TrainingSummary['workouts'][number]) =>
+	[
+		{ label: ui.date, value: workout.date },
+		{ label: ui.duration, value: `${workout.durationMin} min` },
+		workout.volumeKg > 0 && {
+			label: ui.volume,
+			value: `${workout.volumeKg.toLocaleString(numbers)} kg`,
+		},
+	].filter((stat): stat is { label: string; value: string } => Boolean(stat));
+---
+
+{
+	workouts.length > 0 && (
+		<section id="training" class="no-print mx-auto max-w-2xl px-6 pt-48 sm:px-12">
+			<div class="flex flex-col gap-3 bg-blue-100 p-3">
+				<div class="space-y-6 bg-white p-3">
+					<h2 class="font-serif text-2xl leading-8 font-normal text-gray-600 italic">
+						{ui.latestTraining}
+					</h2>
+					<div class="flex flex-col gap-3 sm:flex-row sm:gap-12">
+						{workouts.map((workout) => (
+							<div class="space-y-3">
+								<div class="flex items-center gap-1 text-gray-600">
+									<svg viewBox="0 0 16 16" fill="currentColor" class="size-4" aria-hidden="true">
+										<path d="M1 6.5h1.5v3H1zM13.5 6.5H15v3h-1.5zM3 4.5h2v7H3zM11 4.5h2v7h-2zM5.5 7.5h5v1h-5z" />
+									</svg>
+									<h3 class="font-serif text-base leading-6 font-normal italic">{workout.title}</h3>
+								</div>
+								<div class="flex gap-3">
+									{statsFor(workout).map((stat, index) => (
+										<>
+											{index > 0 && <div class="w-px self-stretch bg-gray-100" />}
+											<div class="flex flex-col">
+												<p class="text-sm leading-5 text-gray-600">{stat.label}</p>
+												<p class="text-base leading-6 font-medium text-blue-500">{stat.value}</p>
+											</div>
+										</>
+									))}
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+				<div class="flex items-center gap-1">
+					{hevyUrl && (
+						<a href={hevyUrl} target="_blank" rel="noopener noreferrer" aria-label="Hevy">
+							<span class="flex items-center justify-center bg-white p-1 text-gray-600">
+								<svg
+									viewBox="0 0 16 16"
+									fill="none"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="size-4"
+									aria-hidden="true"
+								>
+									<path d="M5 11 11 5M5.5 5H11v5.5" />
+								</svg>
+							</span>
+						</a>
+					)}
+					{total !== null && (
+						<div class="bg-white px-3 py-0.5 text-sm text-gray-600">
+							<span class="font-serif italic">{total.toLocaleString(numbers)}</span> {ui.workouts}
+						</div>
+					)}
+				</div>
+			</div>
+		</section>
+	)
+}

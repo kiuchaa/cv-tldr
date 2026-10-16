@@ -1,0 +1,31 @@
+name: Daily rebuild
+
+on:
+  schedule:
+    # Offset from the hour per Hevy API guidance
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  trigger-vercel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "VERCEL_DEPLOY_HOOK secret is not set" >&2
+            exit 1
+          fi
+          status=$(curl -sS -o /tmp/hook-body -w "%{http_code}" -X POST "$VERCEL_DEPLOY_HOOK")
+          body=$(cat /tmp/hook-body)
+          echo "Deploy hook responded with HTTP $status"
+          echo "$body"
+          case "$status" in
+            2*) ;;
+            *)
+              echo "Expected 2xx from deploy hook" >&2
+              exit 1
+              ;;
+          esac

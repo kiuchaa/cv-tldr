@@ -1,0 +1,16 @@
+---
+interface Props {
+	start: string;
+	end?: string;
+	presentLabel: string;
+}
+
+const { start, end, presentLabel } = Astro.props;
+const label = `${start} – ${end ?? presentLabel}`;
+---
+
+<span
+	class="date-range shrink-0 text-right text-sm leading-6 tabular-nums tracking-wide text-gray-500"
+>
+	{label}
+</span>

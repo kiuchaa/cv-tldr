@@ -1,0 +1,41 @@
+---
+interface Props {
+	href: string;
+	label: string;
+	external?: boolean;
+	inheritColor?: boolean;
+}
+
+const { href, label, external = false, inheritColor = false } = Astro.props;
+---
+
+<a
+	href={href}
+	class="group/link flex items-center gap-1"
+	target={external ? '_blank' : undefined}
+	rel={external ? 'noopener noreferrer' : undefined}
+>
+	<span
+		class:list={[
+			'whitespace-nowrap transition-colors duration-300',
+			!inheritColor && 'group-hover/link:text-blue-500',
+		]}
+	>
+		{label}
+	</span>
+	<svg
+		viewBox="0 0 16 16"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="1"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		class:list={[
+			'size-4 transition-transform duration-300 group-hover/link:-translate-y-1',
+			!inheritColor && 'text-blue-500',
+		]}
+		aria-hidden="true"
+	>
+		<path d="M5 11 11 5M5.5 5H11v5.5"></path>
+	</svg>
+</a>

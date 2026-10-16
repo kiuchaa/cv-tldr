@@ -1,0 +1,26 @@
+---
+import type { RichText } from '../data/types';
+
+interface Props {
+	content: RichText;
+	accentClass?: string;
+}
+
+const { content, accentClass = 'text-blue-500' } = Astro.props;
+---
+
+{
+	content.map((part) => {
+		if (typeof part === 'string') return part;
+		const className = [part.em && 'font-serif italic', (part.accent || part.href) && accentClass]
+			.filter(Boolean)
+			.join(' ');
+		return part.href ? (
+			<a href={part.href} class={className} target="_blank" rel="noopener noreferrer">
+				{part.text}
+			</a>
+		) : (
+			<span class={className}>{part.text}</span>
+		);
+	})
+}

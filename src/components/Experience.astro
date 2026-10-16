@@ -1,0 +1,52 @@
+---
+import { getCv } from '../data/cv';
+import { getUi } from '../data/ui';
+import { cvPdfPath, getLocale } from '../i18n';
+import ArrowLink from './ArrowLink.astro';
+import DateRange from './DateRange.astro';
+import Rich from './Rich.astro';
+import Section from './Section.astro';
+
+const locale = getLocale(Astro.currentLocale);
+const cv = getCv(locale);
+const ui = getUi(locale);
+---
+
+{
+	cv.experience.length > 0 && (
+		<Section title={ui.experience} id="experience">
+			{cv.experience.map((job, index) => (
+				<>
+					{index > 0 && <hr class="cv-divider" />}
+					<div class="cv-item space-y-1">
+						<p class="text-base leading-6 font-medium text-gray-600">{job.company}</p>
+						<div class="role-row flex items-baseline gap-3">
+							<p class="min-w-0 flex-1 text-base leading-6 text-gray-600">{job.role}</p>
+							<hr class="role-leader hidden grow self-center sm:block" />
+							<DateRange start={job.start} end={job.end} presentLabel={ui.present} />
+						</div>
+						{job.description && (
+							<p class="pt-1 text-sm leading-5 text-pretty text-gray-500">
+								{typeof job.description === 'string' ? (
+									job.description
+								) : (
+									<Rich content={job.description} />
+								)}
+							</p>
+						)}
+						{job.highlights && job.highlights.length > 0 && (
+							<ul class="list-disc space-y-0.5 pt-1 pl-5 text-sm leading-5 text-gray-500">
+								{job.highlights.map((item) => (
+									<li>{item}</li>
+								))}
+							</ul>
+						)}
+					</div>
+				</>
+			))}
+			<div class="no-print flex justify-end">
+				<ArrowLink href={cvPdfPath(locale)} label={ui.downloadCv} />
+			</div>
+		</Section>
+	)
+}

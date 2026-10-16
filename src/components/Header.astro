@@ -1,0 +1,52 @@
+---
+import { getCv } from '../data/cv';
+import { getLocale } from '../i18n';
+import Rich from './Rich.astro';
+
+const cv = getCv(getLocale(Astro.currentLocale));
+---
+
+<section id="about" class="mx-auto max-w-2xl px-6 pt-48 sm:px-12 print:pt-0">
+	<div class="space-y-8">
+		{/* Print + screen identity — same source as the rest of the page */}
+		<div class="hero-identity mb-6 space-y-1 print:mb-5">
+			<p class="text-2xl font-medium tracking-tight text-gray-600 print:text-[18pt]">
+				{cv.name}
+			</p>
+			<p class="text-base text-gray-500 print:text-[10pt]">
+				{cv.title}
+			</p>
+		</div>
+
+		<h1 class="no-print text-3xl leading-12 font-normal text-gray-600">
+			<span class="text-pretty">
+				{
+					cv.headline.map((line, index) => (
+						<>
+							{index > 0 && <br />}
+							<Rich content={line} />
+						</>
+					))
+				}
+			</span>
+		</h1>
+
+		<div class="space-y-4 text-pretty print:space-y-2">
+			{
+				cv.summary.map((paragraph, index) => {
+					const isWebOnly = index >= cv.summary.length - 2;
+					return (
+						<p
+							class:list={[
+								'text-base leading-6 text-gray-600 print:text-[10pt] print:leading-normal',
+								isWebOnly && 'no-print',
+							]}
+						>
+							<Rich content={paragraph} />
+						</p>
+					);
+				})
+			}
+		</div>
+	</div>
+</section>

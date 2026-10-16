@@ -1,0 +1,82 @@
+---
+import { getCv } from '../data/cv';
+import { getUi } from '../data/ui';
+import { getLocale } from '../i18n';
+import type { ContributionDay } from '../lib/github';
+import ArrowLink from './ArrowLink.astro';
+
+interface Props {
+	weeks: ContributionDay[][];
+}
+
+const { weeks } = Astro.props;
+const locale = getLocale(Astro.currentLocale);
+const cv = getCv(locale);
+const ui = getUi(locale);
+const cell = 12;
+const step = 16;
+const width = weeks.length * step - (step - cell);
+const height = 7 * step - (step - cell);
+const fills = [
+	'var(--color-blue-100)',
+	'var(--color-blue-200)',
+	'var(--color-blue-300)',
+	'var(--color-blue-400)',
+	'var(--color-blue-500)',
+];
+const topDots = Array.from({ length: 10 }, (_, i) => 15 + i * 37.3);
+const bottomDots = Array.from({ length: 6 }, (_, i) => 239 + i * 37.4);
+---
+
+{
+	weeks.length > 0 && (
+		<section class="no-print mx-auto max-w-2xl px-6 pt-24 sm:px-12">
+			<div class="space-y-3">
+				<div class="max-w-full overflow-x-auto pt-0.5">
+					<svg
+						width={width}
+						height={height}
+						viewBox={`0 0 ${width} ${height}`}
+						class="block overflow-visible"
+						role="img"
+						aria-label="GitHub contributions"
+					>
+						{weeks.map((week, x) =>
+							week.map((day) => (
+								<rect
+									x={x * step}
+									y={new Date(`${day.date}T00:00:00Z`).getUTCDay() * step}
+									width={cell}
+									height={cell}
+									rx="0"
+									ry="0"
+									fill={fills[day.level]}
+								>
+									<title>{`${day.count} contributions on ${day.date}`}</title>
+								</rect>
+							)),
+						)}
+					</svg>
+				</div>
+				<div class="flex items-start justify-end sm:justify-between sm:gap-3">
+					<svg class="text-blue-500 max-sm:hidden" viewBox="0 0 430 50" fill="none" aria-hidden="true">
+						<path
+							d="M0 12h350M202 12c0 33 37 34 37 34h187"
+							stroke="currentColor"
+							stroke-width="1"
+						/>
+						<g class="fill-blue-300">
+							{topDots.map((cx) => (
+								<circle cx={cx} cy="12" r="4" />
+							))}
+							{bottomDots.map((cx) => (
+								<circle cx={cx} cy="46" r="4" />
+							))}
+						</g>
+					</svg>
+					<ArrowLink href={cv.contact.github} label={ui.viewOnGithub} external />
+				</div>
+			</div>
+		</section>
+	)
+}

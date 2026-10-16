@@ -1,0 +1,38 @@
+---
+import { Font } from 'astro:assets';
+import { getCv } from '../data/cv';
+import { getLocale } from '../i18n';
+import { toPlainText } from '../lib/text';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const locale = getLocale(Astro.currentLocale);
+const cv = getCv(locale);
+const title = Astro.props.title ?? `${cv.name} — ${cv.title}`;
+const description = Astro.props.description ?? cv.summary.map(toPlainText).join(' ');
+---
+
+<!doctype html>
+<html lang={locale} class="scroll-smooth">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" href="/kiucha-better.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/kiucha-better.svg" />
+		<link rel="alternate" hreflang="en" href="/" />
+		<link rel="alternate" hreflang="nl" href="/nl/" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+		<Font cssVariable="--font-geist-sans" preload />
+		<Font cssVariable="--font-junicode" preload />
+		<Font cssVariable="--font-geist-mono" />
+	</head>
+	<body class="bg-blue-500 font-sans text-gray-600 antialiased">
+		<slot />
+	</body>
+</html>

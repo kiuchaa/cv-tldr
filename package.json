@@ -7,11 +7,18 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && npm run pdf",
+    "pdf": "tsx scripts/generate-pdf.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.4.0"
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^7.4.0",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "playwright": "^1.58.2",
+    "tsx": "^4.21.0"
   }
 }

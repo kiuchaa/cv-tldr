@@ -1,0 +1,61 @@
+---
+import { getCv } from '../data/cv';
+import { getUi } from '../data/ui';
+import { getLocale } from '../i18n';
+import Section from './Section.astro';
+
+const locale = getLocale(Astro.currentLocale);
+const cv = getCv(locale);
+const ui = getUi(locale);
+---
+
+{
+	cv.skills.length > 0 && (
+		<Section title={ui.skills} id="skills" spacing="md" class="print-page-break">
+			{cv.skills.map((group, index) => (
+				<>
+					{index > 0 && <hr class="cv-divider" />}
+					<div class="cv-item space-y-2">
+						<p class="text-base leading-6 font-medium text-gray-600">{group.group}</p>
+
+						{/* Site: chips with hover text */}
+						<div class="no-print flex flex-wrap gap-2">
+							{group.items.map((item) => (
+								<span class="group/skill relative">
+									<span
+										class:list={[
+											'inline-block cursor-default px-3 py-0.5 text-sm text-gray-600 outline transition-colors',
+											item.text
+												? 'outline-blue-500 group-hover/skill:text-blue-500'
+												: 'outline-gray-100',
+										]}
+									>
+										{item.name}
+									</span>
+									{item.text && (
+										<span
+											role="tooltip"
+											class="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 w-max max-w-56 -translate-x-1/2 bg-gray-600 px-2.5 py-1.5 text-xs leading-4 text-white opacity-0 transition-opacity group-hover/skill:opacity-100"
+										>
+											{item.text}
+										</span>
+									)}
+								</span>
+							))}
+						</div>
+
+						{/* PDF: name + text in a list */}
+						<ul class="print-only skill-print-list">
+							{group.items.map((item) => (
+								<li>
+									<span class="font-medium text-gray-600">{item.name}</span>
+									{item.text && <span class="text-gray-500"> — {item.text}</span>}
+								</li>
+							))}
+						</ul>
+					</div>
+				</>
+			))}
+		</Section>
+	)
+}
