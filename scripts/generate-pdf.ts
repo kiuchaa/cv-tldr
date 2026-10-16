@@ -1,20 +1,28 @@
 /**
- * CV conversion: print each locale page to A4 PDF in dist/.
+ * CV conversion: print each locale page to A4 PDF.
  *
- *   /      → dist/cv.pdf
- *   /nl/   → dist/cv-nl.pdf
+ *   /      → dist/cv.pdf (+ public/cv.pdf for Vercel)
+ *   /nl/   → dist/cv-nl.pdf (+ public/cv-nl.pdf)
+ *
+ * Skipped on Vercel — Chromium/Playwright is too heavy there.
+ * Deploy uses the committed copies under public/.
  */
 import { spawn, type ChildProcess } from 'node:child_process';
-import { access, mkdir } from 'node:fs/promises';
+import { access, copyFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { chromium, type Browser, type Page } from 'playwright';
 import { cvPdfPath, cvPrintPath, locales, type Locale } from '../src/i18n';
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, 'dist');
+const PUBLIC = path.join(ROOT, 'public');
 const PREVIEW_HOST = '127.0.0.1';
 const PREVIEW_PORT = 4321;
 const PREVIEW_ORIGIN = `http://${PREVIEW_HOST}:${PREVIEW_PORT}`;
+
+function shouldSkipPdf() {
+	return process.env.VERCEL === '1' || process.env.SKIP_PDF === '1';
+}
 
 async function ensureDistExists() {
 	try {
@@ -112,13 +120,24 @@ async function renderLocalePdf(browser: Browser, locale: Locale) {
 			preferCSSPageSize: true,
 			margin: { top: '0', right: '0', bottom: '0', left: '0' },
 		});
-		console.log(`[pdf] ${locale}: ${pageUrl} → ${outPath}`);
+
+		// Commit these — Astro copies public/ → dist/ on Vercel (no Playwright).
+		const publicPath = path.join(PUBLIC, outRel.replace(/^\//, ''));
+		await mkdir(path.dirname(publicPath), { recursive: true });
+		await copyFile(outPath, publicPath);
+
+		console.log(`[pdf] ${locale}: ${pageUrl} → ${outPath} (+ public/)`);
 	} finally {
 		await page.close();
 	}
 }
 
 async function generatePdfs() {
+	if (shouldSkipPdf()) {
+		console.log('[pdf] Skipping Playwright on Vercel — using public/cv*.pdf');
+		return;
+	}
+
 	await ensureDistExists();
 	await ensureChromiumInstalled();
 

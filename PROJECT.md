@@ -70,14 +70,20 @@ Daily cron (06:17 UTC) POSTs the hook so Hevy data stays fresh.
 
 ### PDF conversion
 
-`npm run pdf` (also part of `build`) starts `astro preview`, opens each locale with Playwright in **print** media, waits for fonts, and writes:
+Playwright/Chromium does **not** run on Vercel (too large / unsupported). Flow:
+
+1. **Locally:** `npm run build` runs Playwright and writes `dist/cv.pdf` + `dist/cv-nl.pdf`, then copies them to `public/`.
+2. **Commit** `public/cv.pdf` and `public/cv-nl.pdf`.
+3. **Vercel:** `VERCEL=1` skips Playwright; Astro copies `public/*.pdf` into `dist/`.
 
 | Locale | Page | PDF |
 |--------|------|-----|
 | `en` | `/` | `/cv.pdf` |
 | `nl` | `/nl/` | `/cv-nl.pdf` |
 
-Print CSS hides nav, GitHub graph, bookshelf, training, and download chrome; shows the print-only name/title header. If Chromium install fails on Vercel, generate locally and commit the PDFs under `public/` as a fallback.
+Force-skip anywhere: `SKIP_PDF=1 npm run build`.
+
+After CV content changes that should appear in the download, regenerate locally and commit the updated PDFs.
 
 ## Design notes
 
